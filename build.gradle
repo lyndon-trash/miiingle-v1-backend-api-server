@@ -5,7 +5,6 @@ plugins {
 }
 
 group = 'io.headhuntr'
-version = '0.0.1-SNAPSHOT'
 sourceCompatibility = '1.8'
 
 configurations {
@@ -36,6 +35,12 @@ dependencies {
 	testImplementation('org.springframework.boot:spring-boot-starter-test') {
 		exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
 	}
+
+    // JAX-B dependencies for JDK 9+
+    implementation "javax.xml.bind:jaxb-api:2.2.11"
+    implementation "com.sun.xml.bind:jaxb-core:2.2.11"
+    implementation "com.sun.xml.bind:jaxb-impl:2.2.11"
+    implementation "javax.activation:activation:1.1.1"
 }
 
 test {

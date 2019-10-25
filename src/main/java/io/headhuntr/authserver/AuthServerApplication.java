@@ -2,7 +2,6 @@ package io.headhuntr.authserver;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.security.oauth2.config.annotation.web.configuration.EnableResourceServer;
 
 /**
  * good docs:
@@ -12,9 +11,16 @@ import org.springframework.security.oauth2.config.annotation.web.configuration.E
  * https://www.baeldung.com/spring-security-oauth-jwt
  */
 @SpringBootApplication
-@EnableResourceServer
 public class AuthServerApplication {
 
+    /**
+     * application health check:
+     *
+     * curl -X GET \
+     *   http://localhost:8081/auth/actuator/health \
+     *   -H 'Content-Type: application/json' \
+     *   -H 'cache-control: no-cache'
+     */
 	public static void main(String[] args) {
 		SpringApplication.run(AuthServerApplication.class, args);
 	}

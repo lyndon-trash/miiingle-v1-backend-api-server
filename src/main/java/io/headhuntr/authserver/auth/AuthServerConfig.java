@@ -15,7 +15,6 @@ import org.springframework.security.oauth2.provider.token.TokenEnhancer;
 import org.springframework.security.oauth2.provider.token.TokenEnhancerChain;
 import org.springframework.security.oauth2.provider.token.TokenStore;
 import org.springframework.security.oauth2.provider.token.store.JwtAccessTokenConverter;
-import org.springframework.security.oauth2.provider.token.store.JwtTokenStore;
 
 import static java.util.Arrays.asList;
 
@@ -25,7 +24,6 @@ import static java.util.Arrays.asList;
  * curl -X POST \
  *   http://client1234:client1234secret@localhost:8081/auth/oauth/token \
  *   -H 'Content-Type: application/x-www-form-urlencoded' \
- *   -H 'Postman-Token: 01664c9f-8a13-41e7-b884-c5cbbe0cbfb6' \
  *   -H 'cache-control: no-cache' \
  *   -d 'grant_type=password&username=admin&password=admin'
  */
@@ -42,6 +40,8 @@ public class AuthServerConfig extends AuthorizationServerConfigurerAdapter {
 
     private final PasswordEncoder passwordEncoder;
     private final AuthenticationManager authenticationManager;
+    private final TokenStore tokenStore;
+    private final JwtAccessTokenConverter accessTokenConverter;
 
     /**
      * defines the security constraints on the token endpoint.
@@ -74,27 +74,17 @@ public class AuthServerConfig extends AuthorizationServerConfigurerAdapter {
     @Override
     public void configure(AuthorizationServerEndpointsConfigurer endpoints) throws Exception {
         TokenEnhancerChain tokenEnhancerChain = new TokenEnhancerChain();
-        tokenEnhancerChain.setTokenEnhancers(asList(tokenEnhancer(), accessTokenConverter()));
+        tokenEnhancerChain.setTokenEnhancers(asList(tokenEnhancer(), accessTokenConverter));
 
-        endpoints.tokenStore(tokenStore())
+        endpoints.tokenStore(tokenStore)
                 .tokenEnhancer(tokenEnhancerChain)
                 .authenticationManager(authenticationManager);
-    }
-
-    @Bean
-    public TokenStore tokenStore() {
-        return new JwtTokenStore(accessTokenConverter());
-    }
-
-    @Bean
-    public JwtAccessTokenConverter accessTokenConverter() {
-        final JwtAccessTokenConverter converter = new JwtAccessTokenConverter();
-        converter.setSigningKey("123");
-        return converter;
     }
 
     @Bean
     public TokenEnhancer tokenEnhancer() {
         return new CustomTokenEnhancer();
     }
+
+
 }

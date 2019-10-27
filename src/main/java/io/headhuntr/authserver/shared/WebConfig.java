@@ -19,7 +19,8 @@ public class WebConfig {
             public void addCorsMappings(CorsRegistry registry) {
                 log.info("Configuring CORS");
 
-                registry.addMapping("/**");
+                registry.addMapping("/**")
+                        .allowedOrigins("http://localhost:4200", "https://dev.miiingle.net");
             }
         };
     }

@@ -86,5 +86,4 @@ public class AuthServerConfig extends AuthorizationServerConfigurerAdapter {
         return new CustomTokenEnhancer();
     }
 
-
 }

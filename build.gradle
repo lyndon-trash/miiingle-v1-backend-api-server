@@ -1,11 +1,11 @@
 plugins {
-	id 'org.springframework.boot' version '2.2.7.RELEASE'
-	id 'io.spring.dependency-management' version '1.0.9.RELEASE'
+	id 'org.springframework.boot' 			version '2.2.7.RELEASE'
+	id 'io.spring.dependency-management' 	version '1.0.9.RELEASE'
 	id 'java'
+	id 'com.palantir.docker' 				version '0.25.0'
 }
 
 group = 'net.miiingle'
-version = '0.0.1-SNAPSHOT'
 sourceCompatibility = '11'
 
 configurations {
@@ -37,4 +37,10 @@ dependencies {
 
 test {
 	useJUnitPlatform()
+}
+
+docker {
+	name "${dockerRepository}:${version}"
+	files jar.archiveFile
+	buildArgs(['JAR_FILE': "${project.jar.archiveName}"])
 }

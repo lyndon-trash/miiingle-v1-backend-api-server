@@ -14,7 +14,9 @@ deploy:
     aws ecr get-login-password --region us-east-1 |
     docker login --username AWS --password-stdin $DOCKER_ECR_REPO_URL &&
     ./gradlew build dockerPush -x test -PdockerRepository=$DOCKER_ECR_REPO_URL/api-server &&
-    eksctl get cluster --region us-east-1 &&
+    aws eks --region us-east-1 update-kubeconfig --name $EKS_CLUSTER &&
+    kubectl scale deployment api-server --replicas=0 &&
+    kubectl scale deployment api-server --replicas=1 &&
     echo deploy
   on:
     branch: master

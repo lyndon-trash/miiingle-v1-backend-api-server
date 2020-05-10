@@ -1,4 +1,6 @@
 # Backend: API Server
+[![Build Status](https://travis-ci.com/miiingle/backend-api-server.svg?branch=master)](https://travis-ci.com/miiingle/backend-api-server)
+
 Resource Server for the Miiingle.NET Web and Mobile App
 
 ## Dockerize and Push to Registry

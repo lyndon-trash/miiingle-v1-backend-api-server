@@ -1,1 +1,12 @@
 language: java
+services:
+  - docker
+
+before_deploy:
+  - pip install awscli
+
+deploy:
+  provider: script
+  script: eval $(aws ecr get-login --region us-east-1) && gradlew build dockerPush -x test -PdockerRepository=$DOCKER_ECR_REPO_URL/api-server
+  on:
+    branch: master

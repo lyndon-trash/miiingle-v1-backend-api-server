@@ -10,6 +10,11 @@ before_install:
 
 deploy:
   provider: script
-  script: aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin $DOCKER_ECR_REPO_URL && ./gradlew build dockerPush -x test -PdockerRepository=$DOCKER_ECR_REPO_URL/api-server
+  script: >
+    aws ecr get-login-password --region us-east-1 |
+    docker login --username AWS --password-stdin $DOCKER_ECR_REPO_URL &&
+    ./gradlew build dockerPush -x test -PdockerRepository=$DOCKER_ECR_REPO_URL/api-server &&
+    eksctl get cluster --region us-east-1 &&
+    echo deploy
   on:
     branch: master

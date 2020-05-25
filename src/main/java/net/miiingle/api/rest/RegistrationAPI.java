@@ -1,6 +1,10 @@
 package net.miiingle.api.rest;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import net.miiingle.api.Registration;
@@ -19,6 +23,7 @@ import java.net.URI;
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.*;
 
+@Tag(name = "Registration", description = "The process of creating an account attributed to various login options")
 @RestController
 @RequestMapping("registrations")
 @RequiredArgsConstructor
@@ -28,6 +33,10 @@ public class RegistrationAPI {
     private final RegistrationService service;
     private final PagedResourcesAssembler<Registration> assembler;
 
+    @Operation(
+            summary = "List all Registrations",
+            description = "This will list all the registrations for the server"
+    )
     @GetMapping
     public PagedModel<EntityModel<Registration>> findAll(Pageable page) {
         var pagedModel = assembler.toModel(repository.findAll(page));
@@ -36,6 +45,10 @@ public class RegistrationAPI {
         return pagedModel;
     }
 
+    @Operation(
+            summary = "List all available search options",
+            description = "Applications can filter out the list of registrations using any of the following APIs"
+    )
     @GetMapping("search")
     public PagedModel<EntityModel<Registration>> search(Pageable page) {
         var searchModel = assembler.toModel(repository.findAll(page));
@@ -45,11 +58,19 @@ public class RegistrationAPI {
         return searchModel;
     }
 
+    @Operation(
+            summary = "Search Registrations by their first name",
+            description = "This will list all the registrations matching the first name"
+    )
     @GetMapping("search/byFirstName")
-    public PagedModel<EntityModel<Registration>> findByFirstName(@RequestParam(value = "firstName", required = false) String firstName, Pageable page) {
+    public PagedModel<EntityModel<Registration>> findByFirstName(@RequestParam("firstName") String firstName, Pageable page) {
         return assembler.toModel(repository.findByFirstName(firstName, page));
     }
 
+    @Operation(
+            summary = "Get the specific Registration by ID",
+            description = "This will list all the registrations matching the ID in the path params"
+    )
     @GetMapping("{id}")
     public ResponseEntity<EntityModel<Registration>> findOne(@PathVariable long id) {
         return repository.findById(id)
@@ -71,6 +92,10 @@ public class RegistrationAPI {
                 linkTo(methodOn(RegistrationAPI.class).findAll(Pageable.unpaged())).withRel("registrations"));
     }
 
+    @Operation(
+            summary = "Create a new Registration",
+            description = "This will create the new Registration and return the version with an ID"
+    )
     @SneakyThrows
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
@@ -84,13 +109,27 @@ public class RegistrationAPI {
                     .body(employeeResource);
     }
 
+    @Operation(
+            summary = "Update Registration",
+            description = "This will update the registration completely"
+    )
     @PutMapping("{id}")
     public ResponseEntity<EntityModel<Registration>> update(@PathVariable Long id, @RequestBody Registration registration) {
         return ResponseEntity.ok(toEntityModel(service.update(id, registration)));
     }
 
+    @Operation(
+            summary = "Partially Update Registration",
+            description = "This will partially update the registration"
+    )
     @PatchMapping("{id}")
-    public ResponseEntity<EntityModel<Registration>> partiallyUpdate(@PathVariable Long id, @RequestBody JsonNode changes) {
+    public ResponseEntity<EntityModel<Registration>> partiallyUpdate(
+            @PathVariable Long id,
+            @Parameter(
+                    description="Contact's address to update.",
+                    required=true,
+                    schema=@Schema(implementation = Registration.class))
+            @RequestBody JsonNode changes) {
         return ResponseEntity.ok(toEntityModel(service.partiallyUpdate(id, changes)));
     }
 }

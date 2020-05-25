@@ -1,22 +1,79 @@
 {
 	"info": {
-		"_postman_id": "252bdbd7-7f52-4087-b6ab-db11ad601824",
+		"_postman_id": "67186e94-a32d-4d5f-99c6-e91575b0d188",
 		"name": "API Server",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
 	"item": [
 		{
-			"name": "Registrations: List All",
+			"name": "Registrations: Find All",
 			"request": {
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "{{BASE_URI}}/registrations",
+					"raw": "{{BASE_URI}}/registrations?page=0&size=2&sort=lastName,asc",
 					"host": [
 						"{{BASE_URI}}"
 					],
 					"path": [
 						"registrations"
+					],
+					"query": [
+						{
+							"key": "page",
+							"value": "0"
+						},
+						{
+							"key": "size",
+							"value": "2"
+						},
+						{
+							"key": "sort",
+							"value": "lastName,asc"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Registrations: Search",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{BASE_URI}}/registrations/search",
+					"host": [
+						"{{BASE_URI}}"
+					],
+					"path": [
+						"registrations",
+						"search"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Registrations: Search by First Name",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{BASE_URI}}/registrations/search/byFirstName?firstName=Craig",
+					"host": [
+						"{{BASE_URI}}"
+					],
+					"path": [
+						"registrations",
+						"search",
+						"byFirstName"
+					],
+					"query": [
+						{
+							"key": "firstName",
+							"value": "Craig"
+						}
 					]
 				}
 			},
@@ -28,9 +85,22 @@
 				{
 					"listen": "prerequest",
 					"script": {
-						"id": "b21deb97-720a-436b-815a-4b89ce3b7ece",
+						"id": "1c7f0794-ad76-4517-99f2-2c970173bf13",
 						"exec": [
 							"pm.environment.set(\"randomNumber\", _.random(10000000));"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"id": "4744d8f7-d26c-4db6-8d65-3bd8b7ffc2f9",
+						"exec": [
+							"var jsonData = JSON.parse(responseBody);\r",
+							"var link = jsonData._links.self.href;\r",
+							"\r",
+							"pm.environment.set(\"registration.link\", link);"
 						],
 						"type": "text/javascript"
 					}
@@ -55,6 +125,152 @@
 					],
 					"path": [
 						"registrations"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Registrations: Partial Update",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "877cca98-ab5f-4ce6-b585-8fcd6c8000b4",
+						"exec": [
+							"pm.environment.set(\"randomNumber\", _.random(10000000));"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "PATCH",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"firstName\": \"Craig Updated\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{registration.link}}",
+					"host": [
+						"{{registration.link}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Registrations: Get Partially Updated",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "afe5a81d-95ba-4238-bc0d-7eb8ae101e3f",
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{registration.link}}",
+					"host": [
+						"{{registration.link}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Registrations: Update",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "9b6aedc2-deb5-4991-bd24-7ad5a35399fb",
+						"exec": [
+							"pm.environment.set(\"randomNumber\", _.random(10000000));"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"firstName\": \"PUT FIRST\",\n\t\"lastName\": \"PUT LAST\",\n\t\"fullName\": \"PUT FULL\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{registration.link}}",
+					"host": [
+						"{{registration.link}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Registrations: Get Full Update",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "47bb5e27-22af-4351-bbcd-6482dc652095",
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{registration.link}}",
+					"host": [
+						"{{registration.link}}"
 					]
 				}
 			},

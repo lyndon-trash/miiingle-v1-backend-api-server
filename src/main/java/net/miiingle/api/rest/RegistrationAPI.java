@@ -1,9 +1,11 @@
 package net.miiingle.api.rest;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import net.miiingle.api.Registration;
 import net.miiingle.api.repository.RegistrationRepository;
+import net.miiingle.api.service.RegistrationService;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PagedResourcesAssembler;
 import org.springframework.hateoas.EntityModel;
@@ -15,8 +17,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
 
-import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
-import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.*;
 
 @RestController
 @RequestMapping("registrations")
@@ -24,6 +25,7 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 public class RegistrationAPI {
 
     private final RegistrationRepository repository;
+    private final RegistrationService service;
     private final PagedResourcesAssembler<Registration> assembler;
 
     @GetMapping
@@ -36,7 +38,7 @@ public class RegistrationAPI {
 
     @GetMapping("search")
     public PagedModel<EntityModel<Registration>> search(Pageable page) {
-        var searchModel = assembler.toModel(repository.findAll(Pageable.unpaged()));
+        var searchModel = assembler.toModel(repository.findAll(page));
 
         searchModel.add(linkTo(methodOn(RegistrationAPI.class).findByFirstName(null, null)).withRel("byFirstName"));
 
@@ -51,11 +53,22 @@ public class RegistrationAPI {
     @GetMapping("{id}")
     public ResponseEntity<EntityModel<Registration>> findOne(@PathVariable long id) {
         return repository.findById(id)
-                .map(employee -> new EntityModel<>(employee,
-                        linkTo(methodOn(RegistrationAPI.class).findOne(employee.getId())).withSelfRel(),
-                        linkTo(methodOn(RegistrationAPI.class).findAll(Pageable.unpaged())).withRel("registrations")))
+                .map(this::toEntityModel)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
+    }
+
+    private EntityModel<Registration> toEntityModel(Registration registration) {
+        var clazz = RegistrationAPI.class;
+        var id = registration.getId();
+
+        var findOneLink = linkTo(methodOn(RegistrationAPI.class).findOne(id)).withSelfRel()
+                .andAffordance(afford(methodOn(clazz).partiallyUpdate(id, null)))
+                .andAffordance(afford(methodOn(clazz).update(id, null)));
+
+        return new EntityModel<>(registration,
+                findOneLink,
+                linkTo(methodOn(RegistrationAPI.class).findAll(Pageable.unpaged())).withRel("registrations"));
     }
 
     @SneakyThrows
@@ -69,5 +82,15 @@ public class RegistrationAPI {
             return ResponseEntity
                     .created(new URI(employeeResource.getRequiredLink(IanaLinkRelations.SELF).getHref()))
                     .body(employeeResource);
+    }
+
+    @PutMapping("{id}")
+    public ResponseEntity<EntityModel<Registration>> update(@PathVariable Long id, @RequestBody Registration registration) {
+        return ResponseEntity.ok(toEntityModel(service.update(id, registration)));
+    }
+
+    @PatchMapping("{id}")
+    public ResponseEntity<EntityModel<Registration>> partiallyUpdate(@PathVariable Long id, @RequestBody JsonNode changes) {
+        return ResponseEntity.ok(toEntityModel(service.partiallyUpdate(id, changes)));
     }
 }

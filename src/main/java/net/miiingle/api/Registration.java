@@ -27,7 +27,7 @@ public class Registration {
     @Enumerated(EnumType.STRING)
     Type type;
 
-    enum Type {
+    public enum Type {
         FACEBOOK,
         EMAIL,
     }

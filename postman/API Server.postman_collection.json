@@ -6,6 +6,23 @@
 	},
 	"item": [
 		{
+			"name": "API Root",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{BASE_URI}}/",
+					"host": [
+						"{{BASE_URI}}"
+					],
+					"path": [
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
 			"name": "Registrations: Find All",
 			"request": {
 				"method": "GET",
@@ -111,7 +128,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n\t\"fullName\": \"Craig Smith\",\n\t\"firstName\": \"Craig\",\n\t\"lastName\": \"Smith{{randomNumber}}\"\n}",
+					"raw": "{\n\t\"fullName\": \"Craig Smith\",\n\t\"firstName\": \"Craig\",\n\t\"lastName\": \"Smith{{randomNumber}}\",\n\t\"type\": \"EMAIL\"\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -149,7 +166,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n\t\"firstName\": \"Craig Updated\"\n}",
+					"raw": "{\n\t\"firstName\": \"Craig Updated\",\n\t\"type\": \"FACEBOOK\"\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -222,7 +239,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n\t\"firstName\": \"PUT FIRST\",\n\t\"lastName\": \"PUT LAST\",\n\t\"fullName\": \"PUT FULL\"\n}",
+					"raw": "{\n\t\"firstName\": \"PUT FIRST\",\n\t\"lastName\": \"PUT LAST\",\n\t\"fullName\": \"PUT FULL\",\n\t\"type\": \"EMAIL\"\n}",
 					"options": {
 						"raw": {
 							"language": "json"

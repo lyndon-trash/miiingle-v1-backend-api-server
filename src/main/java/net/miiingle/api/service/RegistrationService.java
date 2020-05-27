@@ -18,16 +18,20 @@ public class RegistrationService {
     public Registration partiallyUpdate(Long id, JsonNode changes) {
         var registration = repository.getOne(id);
 
-        if (changes.get("firstName").isTextual()) {
+        if (changes.has("firstName") && changes.get("firstName").isTextual()) {
             registration.setFirstName(changes.get("firstName").asText());
         }
 
-        if (changes.get("lastName").isTextual()) {
+        if (changes.has("lastName") && changes.get("lastName").isTextual()) {
             registration.setFirstName(changes.get("lastName").asText());
         }
 
-        if (changes.get("fullName").isTextual()) {
+        if (changes.has("fullName") && changes.get("fullName").isTextual()) {
             registration.setFirstName(changes.get("fullName").asText());
+        }
+
+        if (changes.has("type") && changes.get("type").isTextual()) {
+            registration.setType(Registration.Type.valueOf(changes.get("type").asText()));
         }
 
 

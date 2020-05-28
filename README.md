@@ -23,12 +23,12 @@ kubectl edit -n kube-system configmap/aws-auth
 - add the pipeline user to kubernetes users
 ```yaml
   mapUsers: |
-    - userarn: arn:aws:iam::<iam resource id>:user/<iam username>
+    - userarn: arn:aws:iam::<aws_account>:user/<iam username>
       username: pipeline-user
       groups:
         - system:masters
   mapAccounts: |
-    - "<iam resource id>"
+    - "<aws_account>"
 ```
 - make that user an admin
 ```

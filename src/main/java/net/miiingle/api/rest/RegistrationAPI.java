@@ -17,8 +17,7 @@ import org.springframework.hateoas.IanaLinkRelations;
 import org.springframework.hateoas.PagedModel;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.oauth2.jwt.Jwt;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
@@ -29,6 +28,7 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.*;
 @RestController
 @RequestMapping("registrations")
 @RequiredArgsConstructor
+@PreAuthorize("isFullyAuthenticated()")
 public class RegistrationAPI {
 
     private final RegistrationRepository repository;
@@ -40,7 +40,7 @@ public class RegistrationAPI {
             description = "This will list all the registrations for the server"
     )
     @GetMapping
-    public PagedModel<EntityModel<Registration>> findAll(@AuthenticationPrincipal Jwt jwt, Pageable page) {
+    public PagedModel<EntityModel<Registration>> findAll(Pageable page) {
         var pagedModel = assembler.toModel(repository.findAll(page));
         pagedModel.add(linkTo(methodOn(RegistrationAPI.class).search(page)).withRel(IanaLinkRelations.SEARCH));
 
@@ -91,7 +91,7 @@ public class RegistrationAPI {
 
         return new EntityModel<>(registration,
                 findOneLink,
-                linkTo(methodOn(RegistrationAPI.class).findAll(null, Pageable.unpaged())).withRel("registrations"));
+                linkTo(methodOn(RegistrationAPI.class).findAll(Pageable.unpaged())).withRel("registrations"));
     }
 
     @Operation(
@@ -101,7 +101,7 @@ public class RegistrationAPI {
     @SneakyThrows
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public ResponseEntity<EntityModel<Registration>> save(@AuthenticationPrincipal Jwt jwt, @RequestBody Registration registration) {
+    public ResponseEntity<EntityModel<Registration>> save(@RequestBody Registration registration) {
             var savedRegistration = repository.save(registration);
             var linkToFindOne = linkTo(methodOn(RegistrationAPI.class).findOne(savedRegistration.getId())).withSelfRel();
             var employeeResource = new EntityModel<>(savedRegistration, linkToFindOne);
